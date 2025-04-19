@@ -26,7 +26,7 @@ def format_openverse_results(results: list[dict]) -> str:
     return formatted.strip()
 
 def is_citation_request(query: str) -> bool:
-    keywords = ["cite", "citation", "reference", "mla", "apa", "chicago", "bibliography"]
+    keywords = ["cite", "citation", "reference", "mla", "apa", "chicago", "bibliography", "source"]
     return any(kw in query.lower() for kw in keywords)
 
 def load_guide(filename):
