@@ -14,7 +14,7 @@ def format_openverse_results(results: list[dict]) -> str:
         return "No free-to-use content was found."
 
     formatted = "Here are some Creative Commons / public domain options:\n\n"
-    for r in results[:5]:  # Keep the number of results reasonable
+    for r in results[:6]:  # Keep the number of results reasonable
         formatted += f"""🎵 **{r['title']}**  
             By: {r['creator']}  
             License: [{r['license'].upper()}]({r['license_url']})  
@@ -25,24 +25,37 @@ def format_openverse_results(results: list[dict]) -> str:
             </audio>\n\n"""
     return formatted.strip()
 
+def is_citation_request(query: str) -> bool:
+    keywords = ["cite", "citation", "reference", "mla", "apa", "chicago", "bibliography", "source"]
+    return any(kw in query.lower() for kw in keywords)
+
+def load_guide(filename):
+    guide_dir = os.path.join(os.path.dirname(__file__), "guides")
+    guide_path = os.path.join(guide_dir, filename)
+    with open(guide_path, "r", encoding="utf-8") as f:
+        return f.read()
+
 def extract_keywords_with_gemini(query: str) -> list[str]:
     prompt = f"""
         You are a music‑search keyword generator. Given a user’s request, you MUST:
-
-        • **Never** output trademarked or copyrighted titles (e.g. “Pokemon Theme”).  
-        • **Only** output 6–10 short keywords (1–2 words each) describing style, mood, instrumentation, or use.  
+  
+        • **Only** output a long (10-20) list of short keywords (1–2 words each) describing style, mood, instrumentation, or use.  
         • Return a comma‑separated list **only**, no extra text.
 
         EXAMPLES:
         Input: "Can I use the Pokemon theme song in my school presentation"
-        Output: orchestral, upbeat, heroic, fanfare, synth, playful, energetic, cinematic, dynamic, inspirational
+        Output: heroic, fanfare, cinematic, jazz, video game, pokemon, .......
 
         Input: "I need a calm piano background for a cooking video"
-        Output: piano, gentle, soft, ambient, background, minimal, relaxed, looping
+        Output: piano, gentle, soft, ambient, background, minimal, relaxed, calm, .......
 
         Input: "Find spooky music for a Halloween podcast"
-        Output: eerie, dark, haunting, ambient, suspenseful, cinematic, ghostly, atmospheric
+        Output: eerie, dark, haunting, ambient, suspenseful, cinematic, ghostly, atmospheric, halloween, ........
 
+        NEVER use terminology that can be broadly applied to any genre such as "upbeat" or energetic" or terms unless 
+        specifcally asked. 
+
+        If the user is not requesting music or there are no relevant results in the following, then do not return a list of music.
         Now process this input:
 
         "{query}"
@@ -61,39 +74,43 @@ def get_fair_use_response(query: str, mode: str) -> str:
     try:
         keywords = extract_keywords_with_gemini(query)
         results = []
-        for keyword in keywords:
-            search_results = search_openverse(keyword, media_type="audio")
-            results.extend(search_results)
+        for kw in keywords:
+            hits = search_openverse(kw, media_type="audio")
+            results.extend(hits)
         results=format_openverse_results(results)
+
+        citation_text = ""
+        if is_citation_request(query):
+            if "mla" in query.lower():
+                citation_text = load_guide("mla.md")
+            elif "apa" in query.lower():
+                citation_text = load_guide("apa.md")
+            elif "chicago" in query.lower():
+                citation_text = load_guide("chicago.md")
+            else:
+                citation_text = (
+                    load_guide("mla.md") + "\n\n" +
+                    load_guide("apa.md") + "\n\n" +
+                    load_guide("chicago.md")
+                )
 
 
         full_prompt = full_prompt = f"""
-            You are FairUseBot, a legal/ethical assistant that gives advice tailored to the user's role. 
-            Do not remind the user of your purpose unprompted or unnecessarily repeat information.
+            You are FairUseBot, a legal/ethical assistant that gives advice tailored to the user's role.
 
-            User Mode: {mode.upper()}
-            Question: {query}
+            👤 User Mode: {mode.upper()}
+            📥 Question: {query}
 
-            If asked to provide these or if it makes sense to do so, here are some public 
-            domain / free-use tracks relevant to their question:
+            🎧 Here are some public domain / free-use tracks relevant to their question:
             {results}
-            If you provide the user with a list of safe content options, do so at the end of your response and keep
-            the <audio> tags in place. Also, provide proper citations for any content you suggest the user to use 
-            that adheres to the user's provided citation standard OR a citation standard that makes sense if not provided.
 
-            Please respond in a way that is appropriate for a {mode} — tone, explanation depth, 
-            and practical advice should reflect their needs. Provide legal insight on whether 
-            it qualifies as fair use, AND ethical considerations. If helpful, mention how the user's role affects their rights.
+            Please respond in a way that is appropriate for a {mode} — tone, explanation depth, and practical advice should reflect their needs. Provide legal insight on whether it qualifies as fair use, AND ethical considerations. If helpful, mention how the user's role affects their rights.
 
-            Avoid excessive indentation and newlines.
+            {f'Here are relevant citation rules:\n{citation_text}' if citation_text else ''}
 
-            Provide valid citations for any content you suggest and briefly describe its relevant license.
+            End with the list of safe content options, keeping the <audio> tags in place.
             """
-        response = conversation.send_message(
-            full_prompt,
-            generation_config={
-                "max_output_tokens": 1250,
-            })
+        response = conversation.send_message(full_prompt)
         print("🔍 Keywords searched to Openverse:\n", keywords)
         return response.text
     except Exception as e:
