@@ -1,3 +1,71 @@
+.main-layout {
+  display: flex;
+  width: 100%;
+  max-width: 1400px;
+}
+
+.sidebar {
+  width: 260px;
+  min-width: 180px;
+  background: #f3f3ff;
+  border-radius: 1.5rem 0 0 1.5rem;
+  box-shadow: 2px 0 16px rgba(128, 98, 255, 0.05);
+  padding: 1.5rem 1rem;
+  margin-right: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+#new-thread-btn {
+  background: #b86adf;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#new-thread-btn:hover {
+  background: #8062ff;
+}
+
+#thread-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex: 1;
+}
+
+.thread-item {
+  padding: 0.7rem 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 0.75rem;
+  background: #fff;
+  cursor: pointer;
+  border: 1px solid #e5eaff;
+  font-size: 1rem;
+  transition: background 0.2s, border 0.2s;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.thread-item.active, .thread-item:hover {
+  background: #e5eaff;
+  border-color: #b86adf;
+}
+
 body {
   font-family: 'Inter', sans-serif;
   background: radial-gradient(circle at top, #f8e9f0, #e5eaff);
@@ -9,12 +77,13 @@ body {
 }
 
 .container {
-  width: 80%;
-  max-width: 1200px;
+  flex: 1;
   background: white;
-  border-radius: 1.5rem;
+  border-radius: 0 1.5rem 1.5rem 0;
   padding: 2rem;
   box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+  width: auto; 
+  max-width: none; 
 }
 
 #chat-box {
@@ -52,7 +121,7 @@ body {
 
 #user-input {
   width: 100%;
-  padding: 1.2rem 6rem 1.2rem 1.5rem; /* Extra right padding for button space */
+  padding: 1.2rem 6rem 1.2rem 1.5rem;
   border-radius: 1rem;
   border: 1px solid #ccc;
   background: #fafafa;
@@ -116,7 +185,7 @@ button[type="submit"] {
 #user-input {
   flex: 1;
   padding: 1.2rem 1.5rem;
-  border-radius: 1rem 0 0 1rem; /* Rounded on the left only */
+  border-radius: 1rem 0 0 1rem; 
   border: 1px solid #ccc;
   background: #fafafa;
   font-size: 1rem;
@@ -124,7 +193,7 @@ button[type="submit"] {
   outline: none;
   min-height: 3.5rem;
   resize: none;
-  border-right: none; /* so it blends into the button */
+  border-right: none; 
 }
 #user-input:focus {
   border-color: #b86adf;
@@ -134,8 +203,8 @@ button[type="submit"] {
 
 button[type="submit"] {
   height: 50px;
-  width: 100px; /* Wider than it is tall */
-  border-radius: 999px; /* Creates a pill shape instead of a circle */
+  width: 100px; 
+  border-radius: 999px; 
   border: none;
   background: linear-gradient(to bottom right, #b86adf, #8062ff);
   color: white;
@@ -256,4 +325,23 @@ button[type="submit"] {
   background: #f3f3ff;
   font-size: 0.75rem;
   font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .main-layout {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 1rem;
+    border-radius: 1.5rem 1.5rem 0 0;
+    height: auto;
+    max-height: 200px;
+  }
+  
+  .container {
+    border-radius: 0 0 1.5rem 1.5rem;
+  } 
 }
