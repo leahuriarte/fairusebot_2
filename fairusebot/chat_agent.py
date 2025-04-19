@@ -55,6 +55,7 @@ def extract_keywords_with_gemini(query: str) -> list[str]:
         NEVER use terminology that can be broadly applied to any genre such as "upbeat" or energetic" or terms unless 
         specifcally asked. 
 
+        If the user is not requesting music or there are no relevant results in the following, then do not return a list of music.
         Now process this input:
 
         "{query}"
