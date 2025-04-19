@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+openai
+fireworks-ai
+google-generativeai
+python-dotenv

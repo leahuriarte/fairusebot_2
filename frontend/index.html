@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FairUseBot</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <h1 class="title">💬 FairUseBot</h1>
+
+    <div id="chat-box"></div>
+    <p id="typing-indicator" style="display:none;">FairUseBot is typing...</p>
+
+    <div id="prompt-shortcuts">
+      <p><strong>Try one of these:</strong></p>
+      <div class="shortcuts">
+        <button type="button" data-template="Can you help me write a proper citation for this image? [insert link or details]">🧾 Citation Helper</button>
+        <button type="button" data-template="Can you help me write a polite email asking permission to use this content? [insert context]">💌 Permission Email Generator</button>
+        <button type="button" data-template="Can you analyze the licensing of this content for me? [insert URL]">🔍 Link Scanner</button>
+        <button type="button" data-template="I’m a [nonprofit/student/influencer]. Can you tailor copyright advice for my situation? [insert use case]">🛠️ Creator Type Tuning</button>
+        <button type="button" data-template="Is it ethical to use this even if it’s technically allowed? [describe your situation]">💡 Ethics Tips</button>
+      </div>
+    </div>
+
+    <form id="chat-form">
+      <div class="input-row">
+        <textarea id="user-input" placeholder="Ask a question..." autocomplete="off" required></textarea>
+        <button type="submit">Send</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="chat.js"></script>
+</body>
+</html>
