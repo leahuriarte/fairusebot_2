@@ -18,8 +18,9 @@ app.add_middleware(
 
 class Message(BaseModel):
     query: str
+    mode: str 
 
 @app.post("/chat")
 async def chat(message: Message):
-    response = get_fair_use_response(message.query)
+    response = get_fair_use_response(message.query, message.mode)
     return {"response": response}

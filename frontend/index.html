@@ -10,6 +10,7 @@
 <body>
   <div class="container">
     <h1 class="title">💬 FairUseBot</h1>
+
     <div id="mode-selector">
       <label><strong>I am a:</strong></label>
       <select id="user-mode">
@@ -20,18 +21,13 @@
         <option value="other">🌐 Other</option>
       </select>
     </div>
+
     <div id="chat-box"></div>
     <p id="typing-indicator" style="display:none;">FairUseBot is typing...</p>
 
     <div id="prompt-shortcuts">
       <p><strong>Try one of these:</strong></p>
-      <div class="shortcuts">
-        <button type="button" data-template="Can you help me write a proper citation for this image? [insert link or details]">🧾 Citation Helper</button>
-        <button type="button" data-template="Can you help me write a polite email asking permission to use this content? [insert context]">💌 Permission Email Generator</button>
-        <button type="button" data-template="Can you analyze the licensing of this content for me? [insert URL]">🔍 Link Scanner</button>
-        <button type="button" data-template="I’m a [nonprofit/student/influencer]. Can you tailor copyright advice for my situation? [insert use case]">🛠️ Creator Type Tuning</button>
-        <button type="button" data-template="Is it ethical to use this even if it’s technically allowed? [describe your situation]">💡 Ethics Tips</button>
-      </div>
+      <div class="shortcuts"></div>
     </div>
 
     <form id="chat-form">

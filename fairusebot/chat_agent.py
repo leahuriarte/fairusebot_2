@@ -42,7 +42,7 @@ def extract_keywords_with_gemini(query: str) -> list[str]:
 conversation = model.start_chat(history=[
     {"role": "user", "parts": ["You are FairUseBot, an assistant for copyright and ethical content use."]},
 ])
-def get_fair_use_response(query: str) -> str:
+def get_fair_use_response(query: str, mode: str) -> str:
     try:
         keywords = extract_keywords_with_gemini(query)
         results = []
@@ -52,14 +52,19 @@ def get_fair_use_response(query: str) -> str:
         results=format_openverse_results(results)
 
 
-        full_prompt = f"""
-                        User asked: {query}
+        full_prompt = full_prompt = f"""
+            You are FairUseBot, a legal/ethical assistant that gives advice tailored to the user's role.
 
-                        Here are some relevant public domain songs based on keywords from their query: {results}
+            👤 User Mode: {mode.upper()}
+            📥 Question: {query}
 
-                        Now, generate a legal/ethical answer to their question, considering fair use law and the free-use options above. When you give them the free-use options, provide the artist and link also, leave the HTML so they can play an audio clip from chat <3.
-                        """
+            🎧 Here are some public domain / free-use tracks relevant to their question:
+            {results}
 
+            Please respond in a way that is appropriate for a {mode} — tone, explanation depth, and practical advice should reflect their needs. Provide legal insight on whether it qualifies as fair use, AND ethical considerations. If helpful, mention how the user's role affects their rights.
+
+            End with the list of safe content options, keeping the <audio> tags in place.
+            """
         response = conversation.send_message(full_prompt)
         print("🔍 Prompt passed to Gemini:\n", full_prompt)
         print("🔍 Keywords searched to Openverse:\n", keywords)
