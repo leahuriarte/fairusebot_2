@@ -98,7 +98,7 @@ def get_fair_use_response(query: str, mode: str) -> str:
             👤 User Mode: {mode.upper()}
             📥 Question: {query}
 
-            🎧 Here are some public domain / free-use tracks relevant to their question. Do not give them all the results, only the 3-7 tracks you think are most relevant to their query.  HOWEVER, if the user is not requesting music/audio or there are no relevant results in the following, then DO NOT give them a list of tracks, just ignore the following list. 
+            🎧 Here are some public domain / free-use tracks relevant to their question. Do not give them all the results, only the 3-7 tracks you think are most relevant to their query.  HOWEVER, if the user is not requesting music/audio, then DO NOT give them a list of tracks, just IGNORE the following list. 
             {results}
 
             Please respond in a way that is appropriate for a {mode} — tone, explanation depth, and practical advice should reflect their needs. Provide legal insight on whether it qualifies as fair use, AND ethical considerations. If helpful, mention how the user's role affects their rights.
