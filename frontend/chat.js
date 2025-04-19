@@ -25,11 +25,10 @@ function renderThreadList() {
     li.className = "thread-item" + (thread.id === currentThreadId ? " active" : "");
     li.textContent = thread.title || "Untitled Thread";
     li.title = thread.title || "Untitled Thread";
-    li.setAttribute('data-thread-id', thread.id); // Use data attribute
+    li.setAttribute('data-thread-id', thread.id); 
     threadList.appendChild(li);
   });
 }
-
 function startNewThread() {
   const newThread = {
     id: generateThreadId(),
@@ -45,11 +44,23 @@ function startNewThread() {
 
 
 function switchThread(id) {
+  console.log("Switching thread:", id); 
+  
+  if (id === currentThreadId) {
+    console.log("Already on this thread");
+    return;
+  }
+  
   currentThreadId = id;
-  renderThreadList();
-  renderThreadMessages();
+  
+  const thread = threads.find(t => t.id === id);
+  if (!thread) {
+    console.error("Thread not found:", id);
+    return;
+  }
+  renderThreadList(); 
+  renderThreadMessages(); 
 }
-
 function renderThreadMessages() {
   chatBox.innerHTML = "";
   const thread = threads.find(t => t.id === currentThreadId);
@@ -181,15 +192,25 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   
 
-  updateDynamicShortcuts("");
-  
+document.getElementById('thread-list').addEventListener('click', function(e) {
+    const threadItem = e.target.closest('.thread-item');
+    if (threadItem) {
+      const threadId = threadItem.getAttribute('data-thread-id');
+      if (threadId) {
+        console.log("Switching to thread:", threadId);
+        switchThread(threadId);
+      }
+    }
+  });
 
+
+updateDynamicShortcuts("");
+  
   const newThreadBtn = document.getElementById("new-thread-btn");
   if (newThreadBtn) {
     newThreadBtn.onclick = startNewThread;
   }
 });
-
 
 input.addEventListener("keydown", function (event) {
   if (event.key === "Enter" && !event.shiftKey) {
