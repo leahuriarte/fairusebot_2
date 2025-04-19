@@ -14,7 +14,7 @@ def format_openverse_results(results: list[dict]) -> str:
         return "No free-to-use content was found."
 
     formatted = "Here are some Creative Commons / public domain options:\n\n"
-    for r in results[:6]:  # Keep the number of results reasonable
+    for r in results[:10]:  # Keep the number of results reasonable
         formatted += f"""🎵 **{r['title']}**  
             By: {r['creator']}  
             License: [{r['license'].upper()}]({r['license_url']})  
@@ -54,9 +54,6 @@ def extract_keywords_with_gemini(query: str) -> list[str]:
 
         NEVER use terminology that can be broadly applied to any genre such as "upbeat" or energetic" or terms unless 
         specifcally asked. 
-
-        If the user is not requesting music or there are no relevant results in the following, then do not return a list of music.
-        Now process this input:
 
         "{query}"
         """
@@ -101,7 +98,7 @@ def get_fair_use_response(query: str, mode: str) -> str:
             👤 User Mode: {mode.upper()}
             📥 Question: {query}
 
-            🎧 Here are some public domain / free-use tracks relevant to their question:
+            🎧 Here are some public domain / free-use tracks relevant to their question. Do not give them all the results, only the 3-7 tracks you think are most relevant to their query.  HOWEVER, if the user is not requesting music/audio or there are no relevant results in the following, then DO NOT give them a list of tracks, just ignore the following list. 
             {results}
 
             Please respond in a way that is appropriate for a {mode} — tone, explanation depth, and practical advice should reflect their needs. Provide legal insight on whether it qualifies as fair use, AND ethical considerations. If helpful, mention how the user's role affects their rights.
