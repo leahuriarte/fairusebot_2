@@ -14,7 +14,7 @@ def format_openverse_results(results: list[dict]) -> str:
         return "No free-to-use content was found."
 
     formatted = "Here are some Creative Commons / public domain options:\n\n"
-    for r in results[:6]:  # Keep the number of results reasonable
+    for r in results[:5]:  # Keep the number of results reasonable
         formatted += f"""🎵 **{r['title']}**  
             By: {r['creator']}  
             License: [{r['license'].upper()}]({r['license_url']})  
@@ -27,7 +27,9 @@ def format_openverse_results(results: list[dict]) -> str:
 
 def extract_keywords_with_gemini(query: str) -> list[str]:
     prompt = f"""
-            Extract the most relevant keywords from this user query to use for a content licensing search. Specifically searching a database for free to use content. If they ask for a copyrighted song, generate keywords to get similar songs in the search.
+            Extract the most relevant keywords from this user query to use for a content licensing search. 
+            Specifically searching a database for free to use content. If they ask for a copyrighted song, 
+            generate keywords to get similar songs in the search.
 
             Query: "{query}"
 
@@ -46,29 +48,40 @@ def get_fair_use_response(query: str, mode: str) -> str:
     try:
         keywords = extract_keywords_with_gemini(query)
         results = []
-        for kw in keywords:
-            hits = search_openverse(kw, media_type="audio")
-            results.extend(hits)
+        for keyword in keywords:
+            search_results = search_openverse(keyword, media_type="audio")
+            results.extend(search_results)
         results=format_openverse_results(results)
 
 
         full_prompt = full_prompt = f"""
-            You are FairUseBot, a legal/ethical assistant that gives advice tailored to the user's role.
+            You are FairUseBot, a legal/ethical assistant that gives advice tailored to the user's role. 
+            Do not remind the user of your purpose unprompted or unnecessarily repeat information.
 
-            👤 User Mode: {mode.upper()}
-            📥 Question: {query}
+            User Mode: {mode.upper()}
+            Question: {query}
 
-            🎧 Here are some public domain / free-use tracks relevant to their question:
+            If asked to provide these or if it makes sense to do so, here are some public 
+            domain / free-use tracks relevant to their question:
             {results}
+            If you provide the user with a list of safe content options, do so at the end of your response and keep
+            the <audio> tags in place. Also, provide proper citations for any content you suggest the user to use 
+            that adheres to the user's provided citation standard OR a citation standard that makes sense if not provided.
 
-            Please respond in a way that is appropriate for a {mode} — tone, explanation depth, and practical advice should reflect their needs. Provide legal insight on whether it qualifies as fair use, AND ethical considerations. If helpful, mention how the user's role affects their rights.
+            Please respond in a way that is appropriate for a {mode} — tone, explanation depth, 
+            and practical advice should reflect their needs. Provide legal insight on whether 
+            it qualifies as fair use, AND ethical considerations. If helpful, mention how the user's role affects their rights.
 
-            End with the list of safe content options, keeping the <audio> tags in place.
+            Avoid excessive indentation and newlines.
+
+            Provide valid citations for any content you suggest and briefly describe its relevant license.
             """
-        response = conversation.send_message(full_prompt)
-        print("🔍 Prompt passed to Gemini:\n", full_prompt)
+        response = conversation.send_message(
+            full_prompt,
+            generation_config={
+                "max_output_tokens": 1250,
+            })
         print("🔍 Keywords searched to Openverse:\n", keywords)
-        print("🧠 Bot response:\n", response.text)
         return response.text
     except Exception as e:
         return f"⚠️ Error: {str(e)}"
