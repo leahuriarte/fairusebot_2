@@ -38,20 +38,22 @@ def load_guide(filename):
 def extract_keywords_with_gemini(query: str) -> list[str]:
     prompt = f"""
         You are a music‑search keyword generator. Given a user’s request, you MUST:
-
-        • **Never** output trademarked or copyrighted titles (e.g. “Pokemon Theme”).  
-        • **Only** output 6–10 short keywords (1–2 words each) describing style, mood, instrumentation, or use.  
+  
+        • **Only** output a long (10-20) list of short keywords (1–2 words each) describing style, mood, instrumentation, or use.  
         • Return a comma‑separated list **only**, no extra text.
 
         EXAMPLES:
         Input: "Can I use the Pokemon theme song in my school presentation"
-        Output: orchestral, upbeat, heroic, fanfare, synth, playful, energetic, cinematic, dynamic, inspirational
+        Output: heroic, fanfare, cinematic, jazz, video game, pokemon, .......
 
         Input: "I need a calm piano background for a cooking video"
-        Output: piano, gentle, soft, ambient, background, minimal, relaxed, looping
+        Output: piano, gentle, soft, ambient, background, minimal, relaxed, calm, .......
 
         Input: "Find spooky music for a Halloween podcast"
-        Output: eerie, dark, haunting, ambient, suspenseful, cinematic, ghostly, atmospheric
+        Output: eerie, dark, haunting, ambient, suspenseful, cinematic, ghostly, atmospheric, halloween, ........
+
+        NEVER use terminology that can be broadly applied to any genre such as "upbeat" or energetic" or terms unless 
+        specifcally asked. 
 
         Now process this input:
 
@@ -108,9 +110,7 @@ def get_fair_use_response(query: str, mode: str) -> str:
             End with the list of safe content options, keeping the <audio> tags in place.
             """
         response = conversation.send_message(full_prompt)
-        print("🔍 Prompt passed to Gemini:\n", full_prompt)
         print("🔍 Keywords searched to Openverse:\n", keywords)
-        print("🧠 Bot response:\n", response.text)
         return response.text
     except Exception as e:
         return f"⚠️ Error: {str(e)}"

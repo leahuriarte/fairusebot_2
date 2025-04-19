@@ -7,10 +7,10 @@ def search_openverse(
     media_type: str = "audio",
     license: str = "cc0",
     page: int = 1,
-    page_size: int = 3,
+    page_size: int = 10,
     include_quotes: bool = True,
     use_tag_collection: bool = False,
-    ordering: Optional[str] = None,
+    ordering: Optional[str] = "relevance",
 ) -> List[Dict[str, Any]]:
     """
     Openverse lookup that:
