@@ -1,0 +1,1 @@
+Run "uvicorn fairusebot.app:app --reload"
