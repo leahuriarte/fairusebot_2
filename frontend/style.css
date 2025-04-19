@@ -157,24 +157,6 @@ body {
     align-items: center;
   }
   
-  #user-input {
-    width: 100%;
-    min-height: 3.5rem;
-    max-height: 8rem;
-    padding: 1.2rem 1.5rem;
-    border-radius: 1rem;
-    resize: vertical;
-    border: 1px solid #ccc;
-    background: #fafafa;
-    font-size: 1rem;
-    line-height: 1.5;
-    outline: none;
-  }
-  
-  #user-input:focus {
-    border-color: #b86adf;
-  }
-  
   button[type="submit"] {
     padding: 1rem 1.5rem;
     border-radius: 999px;
