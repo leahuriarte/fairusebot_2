@@ -15,13 +15,8 @@
         <button id="new-thread-btn" title="Start new thread">＋</button>
       </div>
       <ul id="thread-list"></ul>
-    </aside>
-    
-    <div class="container">
-      <h1 class="title">💬 FairUseBot</h1>
 
       <div id="mode-selector">
-        <label><strong>I am a:</strong></label>
         <select id="user-mode">
           <option value="student">🎓 Student</option>
           <option value="influencer">📣 Influencer</option>
@@ -30,6 +25,10 @@
           <option value="other">🌐 Other</option>
         </select>
       </div>
+    </aside>
+    
+    <div class="container">
+      <h1 class="title">💬 FairUseBot</h1>
 
       <div id="prompt-shortcuts">
         <p><strong>Try one of these:</strong></p>
@@ -47,7 +46,13 @@
       </form>
     </div>
   </div>
-  
+  <div id="thread-context-menu" class="context-menu">
+    <ul class="context-menu__items">
+      <li class="context-menu__item" id="rename-thread">
+        <i class="context-menu__icon">✏️</i> Rename Thread
+      </li>
+    </ul>
+  </div>
   <script src="chat.js"></script>
 </body>
 </html>
