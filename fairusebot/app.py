@@ -3,6 +3,9 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from fairusebot.chat_agent import get_fair_use_response
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
 
 
 app = FastAPI()
@@ -24,3 +27,10 @@ class Message(BaseModel):
 async def chat(message: Message):
     response = get_fair_use_response(message.query, message.mode)
     return {"response": response}
+
+frontend_path = os.path.join(os.path.dirname(__file__), "..", "frontend")
+app.mount("/static", StaticFiles(directory=frontend_path), name="static")
+
+@app.get("/")
+def serve_index():
+    return FileResponse(os.path.join(frontend_path, "index.html"))
