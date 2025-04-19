@@ -37,14 +37,29 @@ def load_guide(filename):
 
 def extract_keywords_with_gemini(query: str) -> list[str]:
     prompt = f"""
-            Extract the most relevant keywords from this user query to use for a content licensing search. Specifically searching a database for free to use content. If they ask for a copyrighted song, generate keywords to get similar songs in the search.
+        You are a music‑search keyword generator. Given a user’s request, you MUST:
 
-            Query: "{query}"
+        • **Never** output trademarked or copyrighted titles (e.g. “Pokemon Theme”).  
+        • **Only** output 6–10 short keywords (1–2 words each) describing style, mood, instrumentation, or use.  
+        • Return a comma‑separated list **only**, no extra text.
 
-            Return ONLY the keywords as a comma-separated list, no explanations.
-            """
+        EXAMPLES:
+        Input: "Can I use the Pokemon theme song in my school presentation"
+        Output: orchestral, upbeat, heroic, fanfare, synth, playful, energetic, cinematic, dynamic, inspirational
+
+        Input: "I need a calm piano background for a cooking video"
+        Output: piano, gentle, soft, ambient, background, minimal, relaxed, looping
+
+        Input: "Find spooky music for a Halloween podcast"
+        Output: eerie, dark, haunting, ambient, suspenseful, cinematic, ghostly, atmospheric
+
+        Now process this input:
+
+        "{query}"
+        """
     response = model.generate_content(prompt)
     return [kw.strip() for kw in response.text.split(",") if kw.strip()]
+
 
 
 

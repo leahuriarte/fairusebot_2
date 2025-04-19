@@ -3,14 +3,130 @@ const input = document.getElementById("user-input");
 const chatBox = document.getElementById("chat-box");
 const typing = document.getElementById("typing-indicator");
 const shortcutPanel = document.querySelector(".shortcuts");
-
 let currentMode = "student"; // default
 const modeSelect = document.getElementById("user-mode");
+
+let threads = JSON.parse(localStorage.getItem("fairusebot_threads") || "[]");
+let currentThreadId = null;
+
+function generateThreadId() {
+  return "thread-" + Date.now();
+}
+
+function saveThreads() {
+  localStorage.setItem("fairusebot_threads", JSON.stringify(threads));
+}
+
+function renderThreadList() {
+  const threadList = document.getElementById("thread-list");
+  threadList.innerHTML = "";
+  threads.forEach(thread => {
+    const li = document.createElement("li");
+    li.className = "thread-item" + (thread.id === currentThreadId ? " active" : "");
+    li.textContent = thread.title || "Untitled Thread";
+    li.title = thread.title || "Untitled Thread";
+    li.setAttribute('data-thread-id', thread.id); 
+    threadList.appendChild(li);
+  });
+}
+function startNewThread() {
+  const newThread = {
+    id: generateThreadId(),
+    title: "New Thread",
+    messages: []
+  };
+  threads.unshift(newThread);
+  currentThreadId = newThread.id;
+  saveThreads();
+  renderThreadList();
+  renderThreadMessages();
+}
+
+
+function switchThread(id) {
+  console.log("Switching thread:", id); 
+  
+  if (id === currentThreadId) {
+    console.log("Already on this thread");
+    return;
+  }
+  
+  currentThreadId = id;
+  
+  const thread = threads.find(t => t.id === id);
+  if (!thread) {
+    console.error("Thread not found:", id);
+    return;
+  }
+  renderThreadList(); 
+  renderThreadMessages(); 
+}
+function renderThreadMessages() {
+  chatBox.innerHTML = "";
+  const thread = threads.find(t => t.id === currentThreadId);
+  if (!thread) return;
+  thread.messages.forEach(msg => {
+    addMessage(msg.sender, msg.text, msg.type, false);
+  });
+}
+
+function addMessage(sender, text, type, save = true) {
+  const message = document.createElement("div");
+  message.classList.add("message", type);
+  message.innerHTML = `<strong>${sender}:</strong><br>${marked.parse(text)}`;
+  chatBox.appendChild(message);
+  chatBox.scrollTop = chatBox.scrollHeight;
+
+
+  if (save && currentThreadId) {
+    const thread = threads.find(t => t.id === currentThreadId);
+    if (thread) {
+      thread.messages.push({ sender, text, type });
+      
+      if (thread.title === "New Thread" && type === "user") {
+        thread.title = text.slice(0, 30) + (text.length > 30 ? "..." : "");
+      }
+      saveThreads();
+      renderThreadList();
+    }
+  }
+}
+
+function updateDynamicShortcuts(message) {
+  shortcutPanel.innerHTML = "";
+
+  if (currentMode === "student") {
+    addShortcut("📚 Educational Fair Use", "Can students use this under fair use in a school project?");
+  } else if (currentMode === "influencer") {
+    addShortcut("📣 Sponsored Use", "Can I use this in a TikTok or Instagram ad? [insert use case]");
+  } else if (currentMode === "nonprofit") {
+    addShortcut("🤝 Nonprofit Exception", "Does being a nonprofit help my case for using this content?");
+  } else if (currentMode === "artist") {
+    addShortcut("🎨 Remix Rights", "Can I remix this into a new piece and still be safe?");
+  }
+
+  addShortcut("🔍 Link Scanner", "Can you analyze the licensing of this content for me? [insert URL]");
+  addShortcut("💡 Ethics Tips", "Is it ethical to use this even if it's technically allowed?");
+}
+
+function addShortcut(label, template) {
+  const btn = document.createElement("button");
+  btn.textContent = label;
+  btn.type = "button";
+  btn.setAttribute("data-template", template);
+  btn.addEventListener("click", () => {
+    input.value = template;
+    input.focus();
+  });
+  shortcutPanel.appendChild(btn);
+}
+
 
 modeSelect.addEventListener("change", () => {
   currentMode = modeSelect.value;
   updateDynamicShortcuts("");
 });
+
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -43,6 +159,19 @@ form.addEventListener("submit", async (e) => {
       audioSection.classList.add("message", "bot");
       audioSection.innerHTML = `<strong>🎵 Suggested Tracks:</strong><br><br>${data.cc_audio_html}`;
       chatBox.appendChild(audioSection);
+      
+      
+      if (currentThreadId) {
+        const thread = threads.find(t => t.id === currentThreadId);
+        if (thread) {
+          thread.messages.push({ 
+            sender: "FairUseBot", 
+            text: `<strong>🎵 Suggested Tracks:</strong><br><br>${data.cc_audio_html}`, 
+            type: "bot" 
+          });
+          saveThreads();
+        }
+      }
     }
 
   } catch (err) {
@@ -54,45 +183,34 @@ form.addEventListener("submit", async (e) => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-  updateDynamicShortcuts("");
-});
-
-function addMessage(sender, text, type) {
-  const message = document.createElement("div");
-  message.classList.add("message", type);
-  message.innerHTML = `<strong>${sender}:</strong><br>${marked.parse(text)}`;
-  chatBox.appendChild(message);
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-function updateDynamicShortcuts(message) {
-  shortcutPanel.innerHTML = "";
-
-  if (currentMode === "student") {
-    addShortcut("📚 Educational Fair Use", "Can students use this under fair use in a school project?");
-  } else if (currentMode === "influencer") {
-    addShortcut("📣 Sponsored Use", "Can I use this in a TikTok or Instagram ad? [insert use case]");
-  } else if (currentMode === "nonprofit") {
-    addShortcut("🤝 Nonprofit Exception", "Does being a nonprofit help my case for using this content?");
-  } else if (currentMode === "artist") {
-    addShortcut("🎨 Remix Rights", "Can I remix this into a new piece and still be safe?");
+  
+  if (threads.length === 0) startNewThread();
+  else {
+    currentThreadId = threads[0].id;
+    renderThreadList();
+    renderThreadMessages();
   }
+  
 
-  addShortcut("🔍 Link Scanner", "Can you analyze the licensing of this content for me? [insert URL]");
-  addShortcut("💡 Ethics Tips", "Is it ethical to use this even if it’s technically allowed?");
-}
-
-function addShortcut(label, template) {
-  const btn = document.createElement("button");
-  btn.textContent = label;
-  btn.type = "button";
-  btn.setAttribute("data-template", template);
-  btn.addEventListener("click", () => {
-    input.value = template;
-    input.focus();
+document.getElementById('thread-list').addEventListener('click', function(e) {
+    const threadItem = e.target.closest('.thread-item');
+    if (threadItem) {
+      const threadId = threadItem.getAttribute('data-thread-id');
+      if (threadId) {
+        console.log("Switching to thread:", threadId);
+        switchThread(threadId);
+      }
+    }
   });
-  shortcutPanel.appendChild(btn);
-}
+
+
+updateDynamicShortcuts("");
+  
+  const newThreadBtn = document.getElementById("new-thread-btn");
+  if (newThreadBtn) {
+    newThreadBtn.onclick = startNewThread;
+  }
+});
 
 input.addEventListener("keydown", function (event) {
   if (event.key === "Enter" && !event.shiftKey) {

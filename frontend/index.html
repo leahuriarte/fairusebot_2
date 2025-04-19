@@ -8,35 +8,46 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="container">
-    <h1 class="title">💬 FairUseBot</h1>
-
-    <div id="mode-selector">
-      <label><strong>I am a:</strong></label>
-      <select id="user-mode">
-        <option value="student">🎓 Student</option>
-        <option value="influencer">📣 Influencer</option>
-        <option value="nonprofit">🏢 Nonprofit</option>
-        <option value="artist">🎨 Artist</option>
-        <option value="other">🌐 Other</option>
-      </select>
-    </div>
-
-    <div id="prompt-shortcuts">
-      <p><strong>Try one of these:</strong></p>
-      <div class="shortcuts"></div>
-    </div>
-
-    <div id="chat-box"></div>
-    <p id="typing-indicator" style="display:none;">FairUseBot is typing...</p>
-
-    <form id="chat-form">
-      <div class="input-wrapper">
-        <textarea id="user-input" placeholder="Ask a question..."></textarea>
-        <button type="submit">Send</button>
+  <div class="main-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <span>🗂️ Threads</span>
+        <button id="new-thread-btn" title="Start new thread">＋</button>
       </div>
-    </form>    
+      <ul id="thread-list"></ul>
+    </aside>
+    
+    <div class="container">
+      <h1 class="title">💬 FairUseBot</h1>
 
+      <div id="mode-selector">
+        <label><strong>I am a:</strong></label>
+        <select id="user-mode">
+          <option value="student">🎓 Student</option>
+          <option value="influencer">📣 Influencer</option>
+          <option value="nonprofit">🏢 Nonprofit</option>
+          <option value="artist">🎨 Artist</option>
+          <option value="other">🌐 Other</option>
+        </select>
+      </div>
+
+      <div id="prompt-shortcuts">
+        <p><strong>Try one of these:</strong></p>
+        <div class="shortcuts"></div>
+      </div>
+
+      <div id="chat-box"></div>
+      <p id="typing-indicator" style="display:none;">FairUseBot is typing...</p>
+
+      <form id="chat-form">
+        <div class="input-wrapper">
+          <textarea id="user-input" placeholder="Ask a question..."></textarea>
+          <button type="submit">Send</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
   <script src="chat.js"></script>
 </body>
 </html>
